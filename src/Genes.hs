@@ -29,7 +29,7 @@ randChoice chance th els = join (fromList [(th, chance), (els, 1 - chance)])
 
 nextPopulation::EvOptions->Population->GenRand Population
 nextPopulation EvOptions {..} pop = do
-        newPop' <-liftM Prelude.concat $ replicateM (nonElite `div` 2) $ do
+        newPop' <-liftM concat $ replicateM (nonElite `div` 2) $ do
             a1 <- takeChr
             b1 <- takeChr
             (a2, b2) <- crossingover a1 b1
@@ -37,15 +37,15 @@ nextPopulation EvOptions {..} pop = do
             b3 <- applyMutation b2
             return [a3, b3]
         let newPop = elite ++ newPop'
-        return $ if Prelude.length newPop <= Prelude.length pop then newPop else Prelude.tail newPop
+        return $ if length newPop <= length pop then newPop else tail newPop
         where   fits = toRational <$> fitness  <$> pop
                 maxfit = maximum fits
                 chances = zip pop ((/maxfit) <$> fits)
                 takeChr = fromList chances
-                applyMutation c = randChoice (toRational mutationChance) (muatateChromosome c) (return c)
-                sortedPop = snd $ Prelude.unzip $ sortBy (compare `on` fst) $ Prelude.zip (fitness <$> pop) pop 
-                elite = Prelude.take (ceiling $ fromIntegral (Prelude.length pop) * elitePart) sortedPop
-                nonElite = Prelude.length pop - Prelude.length elite
+                applyMutation c = randChoice (toRational mutationChance) (mutateChromosome c) (return c)
+                sortedPop = snd $ unzip $ sortBy (compare `on` fst) $ zip (fitness <$> pop) pop 
+                elite = take (ceiling $ fromIntegral (length pop) * elitePart) sortedPop
+                nonElite = length pop - length elite
 
 randChromosome::Int->GenRand Chromosome
 randChromosome n = replicateM n randBool
@@ -54,8 +54,8 @@ randChromosome n = replicateM n randBool
 randPopulation::Int->Int->GenRand Population
 randPopulation n m = replicateM n $ randChromosome m
 
-muatateChromosome::Chromosome->GenRand Chromosome
-muatateChromosome chr = do 
+mutateChromosome::Chromosome->GenRand Chromosome
+mutateChromosome chr = do 
         n <- uniform [0..length chr - 1]
         return $ invertAt n chr
         where invertAt n orig = take n orig ++ [el] ++ drop (n+1) orig
