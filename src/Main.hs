@@ -16,5 +16,5 @@ opts= EvOptions{populationSize = 42,
 
 main::IO()
 main = do
-   (n, result) <- initEvol opts
+   (n, result,) <- initEvol opts
    print $ show n ++ "-" ++ show result
