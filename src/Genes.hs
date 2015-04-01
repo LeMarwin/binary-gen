@@ -4,6 +4,7 @@ module Genes where
 import Control.Monad.Random;
 import Control.Monad;  
 import Data.Functor;
+import Data.Ord;
 import Data.Function(on)
 import Data.List(sortBy);
 import Data.Foldable(maximumBy);
@@ -43,7 +44,7 @@ nextPopulation EvOptions {..} pop = do
                 chances = zip pop ((/maxfit) <$> fits)
                 takeChr = fromList chances
                 applyMutation c = randChoice (toRational mutationChance) (mutateChromosome c) (return c)
-                sortedPop = snd $ unzip $ sortBy (compare `on` fst) $ zip (fitness <$> pop) pop 
+                sortedPop = sortBy (comparing fitness) pop
                 elite = take (ceiling $ fromIntegral (length pop) * elitePart) sortedPop
                 nonElite = length pop - length elite
 
@@ -72,7 +73,7 @@ runEvol opts@(EvOptions{..}) n pop =
    if (fitness (best pop) >= targetFitness)||(n>=maxGeneration)
    then return (n,pop)
    else do
-        when(n `mod` 10 == 0) $ print $ show n ++ "-" ++ show pop
+        -- | when(n `mod` 10 == 0) $ print $ show n ++ "-" ++ show pop
         rng <- newStdGen
         newPop <- evalRandT (nextPopulation opts pop) rng
         runEvol opts (n+1) newPop
