@@ -1,6 +1,7 @@
 module Main where
 
 import Genes;
+import Util;
 
 fit::Fitness
 fit chr = sum $ map fromIntegral chr
@@ -16,7 +17,7 @@ opts= EvOptions{populationSize = 42,
 
 main::IO()
 main = do
-   --(n, result, best) <- initEvol opts
+   print $ binToInt [1,0,1,0]
    (n,result, bestInd) <- initEvol opts
    print $ "Generation: " ++ show n
    print $ "Best Individual: " ++ show bestInd
