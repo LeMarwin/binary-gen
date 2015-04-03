@@ -12,6 +12,7 @@ import Data.Foldable(maximumBy);
 type Chromosome = [Int]
 type Population = [Chromosome]
 type GenRand = RandT StdGen IO
+type Fitness = Chromosome -> Double
 
 data EvOptions = EvOptions{
                 populationSize::Int,
@@ -22,8 +23,6 @@ data EvOptions = EvOptions{
                 mutationChance::Double,
                 elitePart::Double
                 }
-
-type Fitness = Chromosome -> Double
 
 randChoice :: Rational -> GenRand a -> GenRand a -> GenRand a
 randChoice chance th els = join (fromList [(th, chance), (els, 1 - chance)])
