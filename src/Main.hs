@@ -16,5 +16,8 @@ opts= EvOptions{populationSize = 42,
 
 main::IO()
 main = do
-   (n, result,) <- initEvol opts
-   print $ show n ++ "-" ++ show result
+   --(n, result, best) <- initEvol opts
+   (n,result, bestInd) <- initEvol opts
+   print $ "Generation: " ++ show n
+   print $ "Best Individual: " ++ show bestInd
+   print $ "Whole population:" ++ show result

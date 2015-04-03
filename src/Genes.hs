@@ -68,19 +68,20 @@ crossingover a b = do
         return $ f n
         where f n = (take n a ++ drop n b, take n b ++ drop n a)
 
-runEvol::EvOptions->Int->Population->IO (Int,Population, Chromosome)
+runEvol::EvOptions->Int->Population->IO (Int,Population,Chromosome)
 runEvol opts@(EvOptions{..}) n pop =
-   if (fitness (f pop) >= targetFitness)||(n>=maxGeneration)
-   then return (n,pop, best pop)
+   if (fitness (best) >= targetFitness)||(n>=maxGeneration)
+   then return (n,pop,best)
    else do
         -- | when(n `mod` 10 == 0) $ print $ show n ++ "-" ++ show pop
         rng <- newStdGen
         newPop <- evalRandT (nextPopulation opts pop) rng
         runEvol opts (n+1) newPop
-   where best p = snd . maximumBy (compare `on` fst) $ zip (fitness <$> p) p
+   where 
+       best = snd . maximumBy (compare `on` fst) $ zip (fitness <$> pop) pop
    
 
-initEvol::EvOptions->IO (Int,Population)
+initEvol::EvOptions->IO (Int,Population,Chromosome)
 initEvol opts = do 
    rng <- newStdGen
    initPopulation <- evalRandT (randPopulation (populationSize opts) (individLength opts)) rng
